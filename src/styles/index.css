@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-ink text-cream;
+  }
+
+  body {
+    @apply font-sans antialiased min-h-screen relative overflow-x-hidden;
+  }
+
+  /* Dotted background pattern overlay */
+  body::before {
+    content: '';
+    @apply fixed inset-0 pointer-events-none bg-dots;
+    background-size: 24px 24px;
+    z-index: 0;
+  }
+
+  #root {
+    @apply relative z-10;
+  }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-mustard ring-offset-2 ring-offset-ink;
+  }
+}
+
+@layer components {
+  .card-playful {
+    @apply bg-cream text-ink border-[3px] border-ink rounded-3xl shadow-hard;
+  }
+
+  .card-dark {
+    @apply bg-ink-2 border-[3px] border-cream rounded-3xl;
+  }
+}
