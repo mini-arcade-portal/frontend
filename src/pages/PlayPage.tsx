@@ -1,41 +1,40 @@
-import { useParams, Link } from 'react-router-dom'
-import { Button } from '@/components/Button'
+import { Navigate, useParams, useSearchParams } from 'react-router-dom'
+
+import { SnakeGame } from '@/games/snake/SnakeGame'
+import { DifficultyPicker as SnakeDifficultyPicker } from '@/games/snake/DifficultyPicker'
+import { TicTacToeGame } from '@/games/tictactoe/TicTacToeGame'
+import { DifficultyPicker as TicTacToeDifficultyPicker } from '@/games/tictactoe/DifficultyPicker'
+import type { Difficulty } from '@/api/scores'
+
+const VALID_DIFFICULTIES: readonly Difficulty[] = ['EASY', 'MEDIUM', 'HARD']
+
+function parseDifficulty(value: string | null): Difficulty | null {
+  return VALID_DIFFICULTIES.includes(value as Difficulty)
+    ? (value as Difficulty)
+    : null
+}
 
 export function PlayPage() {
   const { slug } = useParams<{ slug: string }>()
+  const [searchParams] = useSearchParams()
+  const difficulty = parseDifficulty(searchParams.get('difficulty'))
 
-  const titles: Record<string, string> = {
-    snake: 'Snake',
-    tictactoe: 'Tic-Tac-Toe',
-  }
-
-  const title = slug ? titles[slug] : null
-
-  if (!title) {
-    return (
-      <div className="card-playful p-10 text-center">
-        <h2 className="font-display font-extrabold text-3xl mb-3">
-          Ismeretlen játék
-        </h2>
-        <p className="text-ink-2 mb-6">A keresett játék nem található.</p>
-        <Link to="/">
-          <Button variant="mustard">← Vissza</Button>
-        </Link>
-      </div>
+  if (slug === 'snake') {
+    return difficulty ? (
+      <SnakeGame difficulty={difficulty} />
+    ) : (
+      <SnakeDifficultyPicker />
     )
   }
 
-  return (
-    <div className="card-playful p-10 animate-pop">
-      <h2 className="font-display font-extrabold text-4xl mb-2 tracking-tight">
-        {title}
-      </h2>
-      <p className="text-ink-2 mb-8">
-        🚧 A játék komponens hamarosan érkezik — most a routing és a layout él.
-      </p>
-      <Link to="/">
-        <Button variant="pink">← Vissza a játékválasztóhoz</Button>
-      </Link>
-    </div>
-  )
+  if (slug === 'tictactoe') {
+    return difficulty ? (
+      <TicTacToeGame difficulty={difficulty} />
+    ) : (
+      <TicTacToeDifficultyPicker />
+    )
+  }
+
+  // Ismeretlen slug → vissza a főoldalra
+  return <Navigate to="/" replace />
 }

@@ -1,9 +1,14 @@
 import { api } from './client'
 
+
+
 export type GameType = 'snake' | 'tictactoe'
+
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD'
 
 export interface ScoreSubmitRequest {
   gameType: GameType
+  difficulty: Difficulty
   score: number
 }
 
@@ -12,6 +17,7 @@ export interface ScoreResponse {
   userId: number
   username: string
   gameType: string
+  difficulty: Difficulty
   score: number
   createdAt: string
 }

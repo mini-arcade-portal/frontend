@@ -13,9 +13,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // Minden /api hívás a gateway-re megy.
-      // Így nem kell CORS-szal bajlódni dev-ben — a böngésző szempontjából
-      // same-origin a hívás (5173 → 5173 → proxyzva 8080-ra).
+      // same-origin a hívás (5173 → 5173 → proxyzva 8080-ra)
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
