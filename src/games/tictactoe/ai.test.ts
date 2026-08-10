@@ -37,6 +37,14 @@ describe('getAIMove — HARD (minimax)', () => {
     expect(getAIMove(board, 'HARD')).toBe(2)
   })
 
+  it('varies its opening move on an empty board (randomized ties)', () => {
+    const seen = new Set<number>()
+    for (let i = 0; i < 30; i++) {
+      seen.add(getAIMove(Array(9).fill(null) as Board, 'HARD'))
+    }
+    expect(seen.size).toBeGreaterThan(1)
+  })
+
   it('never loses a full game against an opponent that always blocks/wins optimally', () => {
     let board: Board = Array(9).fill(null)
     let current: 'X' | 'O' = 'X'
@@ -53,6 +61,26 @@ describe('getAIMove — HARD (minimax)', () => {
 
     const result = checkWinner(board)
     expect(result?.winner).not.toBe('X')
+  })
+
+  it('never loses even when the AI moves first', () => {
+    for (let run = 0; run < 10; run++) {
+      let board: Board = Array(9).fill(null)
+      let current: 'X' | 'O' = 'O'
+
+      while (!checkWinner(board) && board.includes(null)) {
+        const move =
+          current === 'O'
+            ? getAIMove(board, 'HARD')
+            : bestOpponentMove(board)
+        board = board.slice() as Board
+        board[move] = current
+        current = current === 'X' ? 'O' : 'X'
+      }
+
+      const result = checkWinner(board)
+      expect(result?.winner).not.toBe('X')
+    }
   })
 })
 
