@@ -50,7 +50,7 @@ function minimax(
   const isMax = currentPlayer === AI
 
   let bestScore = isMax ? -Infinity : Infinity
-  let bestMove = empty[0]
+  let bestMoves: number[] = []
 
   for (const i of empty) {
     const next = board.slice()
@@ -58,20 +58,17 @@ function minimax(
     const opponent: Player = currentPlayer === AI ? HUMAN : AI
     const result = minimax(next, opponent, depth + 1)
 
-    if (isMax) {
-      if (result.score > bestScore) {
-        bestScore = result.score
-        bestMove = i
-      }
-    } else {
-      if (result.score < bestScore) {
-        bestScore = result.score
-        bestMove = i
-      }
+    if (isMax ? result.score > bestScore : result.score < bestScore) {
+      bestScore = result.score
+      bestMoves = [i]
+    } else if (result.score === bestScore) {
+      bestMoves.push(i)
     }
   }
 
-  return { score: bestScore, move: bestMove }
+  
+  const move = bestMoves[Math.floor(Math.random() * bestMoves.length)]
+  return { score: bestScore, move }
 }
 
 function hardMove(board: Board): number {

@@ -46,7 +46,7 @@ export const DIFFICULTIES: Record<Difficulty, DifficultyConfig> = {
     emoji: '⚡',
     multiplier: 3,
     description:
-      'Tökéletesen játszik (minimax). Itt a döntetlen is győzelem!',
+      'Tökéletesen játszik (minimax), és minden második körben ő kezd. Itt a döntetlen is győzelem!',
     drawCountsForStreak: true,
   },
 }

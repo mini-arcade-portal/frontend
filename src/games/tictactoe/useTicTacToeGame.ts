@@ -8,6 +8,7 @@ import {
   type Board,
   type Difficulty,
   type GameStatus,
+  type Player,
   type RoundStatus,
 } from './types'
 
@@ -23,6 +24,8 @@ interface TicTacToeGameState {
   gameStatus: GameStatus
   streak: number
   roundNumber: number
+  /** Ki kezdi az aktuális roundot — 'O' esetén az AI lép elsőnek */
+  starter: Player
   /** A győztes vonal indexei round vége után — vizualizáláshoz */
   winningLine: readonly number[] | null
   /** Cellára kattintáskor hívandó */
@@ -46,6 +49,7 @@ export function useTicTacToeGame({
   const [gameStatus, setGameStatus] = useState<GameStatus>('active')
   const [streak, setStreak] = useState(0)
   const [roundNumber, setRoundNumber] = useState(1)
+  const [starter, setStarter] = useState<Player>('X')
   const [winningLine, setWinningLine] = useState<readonly number[] | null>(null)
 
   /**
@@ -56,9 +60,8 @@ export function useTicTacToeGame({
     onGameOverRef.current = onGameOver
   }, [onGameOver])
 
-
   const evaluateBoard = useCallback(
-    (b: Board, justMoved: 'X' | 'O') => {
+    (b: Board, justMoved: Player) => {
       const winnerInfo = checkWinner(b)
 
       if (winnerInfo) {
@@ -116,6 +119,8 @@ export function useTicTacToeGame({
 
   /**
    * AI turn — amikor a roundStatus 'thinking', késleltetve lépünk.
+   * Üres táblán is helyesen működik, így AI-kezdésű roundoknál
+   * (starter === 'O') is ez az effect lép elsőnek.
    */
   useEffect(() => {
     if (roundStatus !== 'thinking') return
@@ -139,20 +144,25 @@ export function useTicTacToeGame({
     if (gameStatus === 'gameover') {
       onGameOverRef.current?.(streak)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameStatus])
 
   const nextRound = useCallback(() => {
     if (gameStatus !== 'active') return
     if (roundStatus !== 'won' && roundStatus !== 'drawn') return
 
+    // Váltakozó kezdés: roundonként cserélődik, ki lép elsőnek.
+    const nextStarter: Player = starter === 'X' ? 'O' : 'X'
+    setStarter(nextStarter)
     setBoard(EMPTY_BOARD)
     setWinningLine(null)
-    setRoundStatus('idle')
+    // Ha az AI kezd, azonnal 'thinking' — az AI-effect üres táblán lép.
+    setRoundStatus(nextStarter === 'O' ? 'thinking' : 'idle')
     setRoundNumber((n) => n + 1)
-  }, [gameStatus, roundStatus])
+  }, [gameStatus, roundStatus, starter])
 
   /**
-   * Teljes reset — új streak, score 0-ról.
+   * Teljes reset — új streak, score 0-ról. Az első roundot mindig a player kezdi.
    */
   const reset = useCallback(() => {
     setBoard(EMPTY_BOARD)
@@ -160,6 +170,7 @@ export function useTicTacToeGame({
     setGameStatus('active')
     setStreak(0)
     setRoundNumber(1)
+    setStarter('X')
     setWinningLine(null)
   }, [])
 
@@ -169,6 +180,7 @@ export function useTicTacToeGame({
     gameStatus,
     streak,
     roundNumber,
+    starter,
     winningLine,
     playCell,
     nextRound,
