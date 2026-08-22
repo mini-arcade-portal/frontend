@@ -40,9 +40,9 @@ export const scoreApi = {
   submit: (data: ScoreSubmitRequest) =>
     api.post<ScoreResponse>('/api/scores', data).then((r) => r.data),
 
-  topScores: (gameType: GameType, limit = 10) =>
+  topScores: (gameType: GameType, limit = 10, difficulty?: Difficulty) =>
     api
-      .get<ScoreResponse[]>('/api/scores', { params: { gameType, limit } })
+      .get<ScoreResponse[]>('/api/scores', { params: { gameType, difficulty, limit } })
       .then((r) => r.data),
 
   myScores: (limit = 10) =>

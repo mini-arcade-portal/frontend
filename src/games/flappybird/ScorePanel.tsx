@@ -14,8 +14,8 @@ export function ScorePanel({ score, pipesPassed, difficulty }: ScorePanelProps) 
   const currentUser = useAuthStore((s) => s.user)
 
   const { data: topScores } = useQuery({
-    queryKey: ['scores', 'top', 'flappybird'],
-    queryFn: () => scoreApi.topScores('flappybird', 10),
+    queryKey: ['scores', 'top', 'flappybird', difficulty],
+    queryFn: () => scoreApi.topScores('flappybird', 10, difficulty),
   })
 
   const { data: myScores } = useQuery({
@@ -28,10 +28,7 @@ export function ScorePanel({ score, pipesPassed, difficulty }: ScorePanelProps) 
       ?.filter((s) => s.gameType === 'flappybird' && s.difficulty === difficulty)
       .reduce((max, s) => Math.max(max, s.score), 0) ?? 0
 
-  const globalBest =
-    topScores
-      ?.filter((s) => s.difficulty === difficulty)
-      .reduce((max, s) => Math.max(max, s.score), 0) ?? 0
+  const globalBest = topScores?.[0]?.score ?? 0
 
   return (
     <aside className="flex flex-col gap-5 overflow-y-auto">

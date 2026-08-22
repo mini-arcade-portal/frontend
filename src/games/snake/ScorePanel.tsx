@@ -21,8 +21,8 @@ export function ScorePanel({
 
   // Top scores ehhez a difficulty-hez (top 5)
   const { data: topScores } = useQuery({
-    queryKey: ['scores', 'top', 'snake'],
-    queryFn: () => scoreApi.topScores('snake', 10),
+    queryKey: ['scores', 'top', 'snake', difficulty],
+    queryFn: () => scoreApi.topScores('snake', 10, difficulty),
   })
 
   // Személyes best ezen a difficulty-n
@@ -35,9 +35,7 @@ export function ScorePanel({
     ?.filter((s) => s.gameType === 'snake' && s.difficulty === difficulty)
     .reduce((max, s) => Math.max(max, s.score), 0) ?? 0
 
-  const globalBest = topScores
-    ?.filter((s) => s.difficulty === difficulty)
-    .reduce((max, s) => Math.max(max, s.score), 0) ?? 0
+  const globalBest = topScores?.[0]?.score ?? 0
 
   // Speed indikátor: hány "fokozaton" vagyunk a max-hoz képest
   const speedSteps = Math.floor(
