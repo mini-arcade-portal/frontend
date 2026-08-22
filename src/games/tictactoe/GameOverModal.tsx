@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/Button'
 import { DIFFICULTIES, type Difficulty } from './types'
@@ -24,6 +25,11 @@ export function GameOverModal({
   onRetrySubmit,
 }: GameOverModalProps) {
   const config = DIFFICULTIES[difficulty]
+  const playAgainRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    playAgainRef.current?.focus()
+  }, [])
 
   return (
     <div
@@ -76,7 +82,13 @@ export function GameOverModal({
 
         {/* Action buttons */}
         <div className="flex flex-col gap-3 mt-6">
-          <Button variant="mustard" size="lg" fullWidth onClick={onPlayAgain}>
+          <Button
+            ref={playAgainRef}
+            variant="mustard"
+            size="lg"
+            fullWidth
+            onClick={onPlayAgain}
+          >
             Új sorozat ({config.label})
           </Button>
           <div className="grid grid-cols-2 gap-3">
