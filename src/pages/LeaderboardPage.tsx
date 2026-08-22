@@ -9,6 +9,7 @@ import { DifficultyBadge } from '@/components/DifficultyBadge'
 const tabs: { value: GameType; label: string }[] = [
   { value: 'snake', label: '🐍 Snake' },
   { value: 'tictactoe', label: '⭕ Tic-Tac-Toe' },
+  { value: 'flappybird', label: '🐤 Flappy Bird' },
 ]
 
 export function LeaderboardPage() {
@@ -114,6 +115,12 @@ function EmptyState({ gameType }: { gameType: GameType }) {
       name: 'Tic-Tac-Toe',
       link: '/play/tictactoe',
       label: '⭕ Tic-Tac-Toe start →',
+    },
+    flappybird: {
+      emoji: '🐤',
+      name: 'Flappy Bird',
+      link: '/play/flappybird',
+      label: '🐤 Flappy Bird start →',
     },
   }[gameType]
 

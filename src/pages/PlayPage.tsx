@@ -5,6 +5,8 @@ import { DifficultyPicker as SnakeDifficultyPicker } from '@/games/snake/Difficu
 import { TicTacToeGame } from '@/games/tictactoe/TicTacToeGame'
 import { TicTacToeFriendGame } from '@/games/tictactoe/TicTacToeFriendGame'
 import { DifficultyPicker as TicTacToeDifficultyPicker } from '@/games/tictactoe/DifficultyPicker'
+import { FlappyBirdGame } from '@/games/flappybird/FlappyBirdGame'
+import { DifficultyPicker as FlappyBirdDifficultyPicker } from '@/games/flappybird/DifficultyPicker'
 import type { Difficulty } from '@/api/scores'
 
 const VALID_DIFFICULTIES: readonly Difficulty[] = ['EASY', 'MEDIUM', 'HARD']
@@ -36,6 +38,14 @@ export function PlayPage() {
       <TicTacToeGame difficulty={difficulty} />
     ) : (
       <TicTacToeDifficultyPicker />
+    )
+  }
+
+  if (slug === 'flappybird') {
+    return difficulty ? (
+      <FlappyBirdGame difficulty={difficulty} />
+    ) : (
+      <FlappyBirdDifficultyPicker />
     )
   }
 
