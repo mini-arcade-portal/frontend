@@ -11,9 +11,12 @@ export interface AuthUser {
 interface AuthState {
   token: string | null
   user: AuthUser | null
+  sessionExpired: boolean
   isAuthenticated: () => boolean
   login: (token: string, user: AuthUser) => void
   logout: () => void
+  expireSession: () => void
+  clearSessionExpired: () => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -21,9 +24,12 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       token: null,
       user: null,
+      sessionExpired: false,
       isAuthenticated: () => !!get().token,
       login: (token, user) => set({ token, user }),
       logout: () => set({ token: null, user: null }),
+      expireSession: () => set({ token: null, user: null, sessionExpired: true }),
+      clearSessionExpired: () => set({ sessionExpired: false }),
     }),
     {
       name: 'mini-arcade-auth',
