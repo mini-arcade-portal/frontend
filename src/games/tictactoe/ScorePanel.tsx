@@ -18,8 +18,8 @@ export function ScorePanel({
   const currentUser = useAuthStore((s) => s.user)
 
   const { data: topScores } = useQuery({
-    queryKey: ['scores', 'top', 'tictactoe'],
-    queryFn: () => scoreApi.topScores('tictactoe', 10),
+    queryKey: ['scores', 'top', 'tictactoe', difficulty],
+    queryFn: () => scoreApi.topScores('tictactoe', 10, difficulty),
   })
 
   const { data: myScores } = useQuery({
@@ -32,10 +32,7 @@ export function ScorePanel({
       ?.filter((s) => s.gameType === 'tictactoe' && s.difficulty === difficulty)
       .reduce((max, s) => Math.max(max, s.score), 0) ?? 0
 
-  const globalBest =
-    topScores
-      ?.filter((s) => s.difficulty === difficulty)
-      .reduce((max, s) => Math.max(max, s.score), 0) ?? 0
+  const globalBest = topScores?.[0]?.score ?? 0
 
   const currentScore = streak * config.multiplier
 
