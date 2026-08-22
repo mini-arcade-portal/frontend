@@ -40,7 +40,7 @@ export function ScorePanel({
   const currentScore = streak * config.multiplier
 
   return (
-    <aside className="flex flex-col gap-5">
+    <aside className="flex flex-col gap-5 overflow-y-auto">
       {/* Difficulty badge */}
       <div className="card-dark p-4 flex items-center gap-3">
         <span className="text-3xl">{config.emoji}</span>

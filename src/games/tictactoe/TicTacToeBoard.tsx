@@ -18,7 +18,7 @@ export function TicTacToeBoard({
       <div
         className="aspect-square bg-[#f5ead0] border-[3px] border-ink rounded-2xl grid gap-2 p-3 w-full"
         style={{
-          maxWidth: 'min(480px, calc(100vh - 280px))',
+          maxWidth: 'min(480px, calc(100dvh - 400px))',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gridTemplateRows: 'repeat(3, 1fr)',
         }}

@@ -19,6 +19,20 @@ function Layout() {
   )
 }
 
+function GameLayout() {
+  return (
+    <div
+      className="max-w-[1240px] mx-auto px-8 pt-6 pb-4 flex flex-col"
+      style={{ height: '100dvh' }}
+    >
+      <TopNav />
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <Outlet />
+      </div>
+    </div>
+  )
+}
+
 export function App() {
   return (
     <BrowserRouter>
@@ -31,9 +45,15 @@ export function App() {
           {/* protected */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
-            <Route path="/play/:slug" element={<PlayPage />} />
             <Route path="/leaderboard" element={<LeaderboardPage />} />
             <Route path="/me" element={<MyScoresPage />} />
+          </Route>
+        </Route>
+
+        {/* Játék oldalak: külön layout, görő nélkül */}
+        <Route element={<GameLayout />}>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/play/:slug" element={<PlayPage />} />
           </Route>
         </Route>
       </Routes>
