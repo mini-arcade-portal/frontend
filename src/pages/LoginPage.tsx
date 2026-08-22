@@ -19,6 +19,8 @@ type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginPage() {
   const login = useAuthStore((s) => s.login)
+  const sessionExpired = useAuthStore((s) => s.sessionExpired)
+  const clearSessionExpired = useAuthStore((s) => s.clearSessionExpired)
   const navigate = useNavigate()
   const location = useLocation()
   const redirectTo = (location.state as { from?: string } | null)?.from ?? '/'
@@ -35,6 +37,7 @@ export function LoginPage() {
     mutationFn: (data: LoginRequest) => authApi.login(data),
     onSuccess: (data) => {
       login(data.token, { username: data.username, role: data.role })
+      clearSessionExpired()
       navigate(redirectTo, { replace: true })
     },
   })
@@ -65,6 +68,12 @@ export function LoginPage() {
         <p className="text-sm opacity-70 mb-7">
           Jelentkezz be és folytasd ahol abbahagytad.
         </p>
+
+        {sessionExpired && (
+          <div className="mb-4 p-3 rounded-xl bg-mustard/10 border-2 border-mustard text-ink text-sm font-medium">
+            A munkameneted lejárt, jelentkezz be újra.
+          </div>
+        )}
 
         <TextField
           label="Felhasználónév"

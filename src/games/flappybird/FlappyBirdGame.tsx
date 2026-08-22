@@ -1,14 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-import { scoreApi } from '@/api/scores'
-import { extractErrorMessage } from '@/api/client'
+import { useScoreSubmission } from '@/hooks/useScoreSubmission'
 
 import { useFlappyBirdGame } from './useFlappyBirdGame'
 import { FlappyBirdBoard } from './FlappyBirdBoard'
 import { ScorePanel } from './ScorePanel'
-import { GameOverModal, type SubmitStatus } from './GameOverModal'
+import { GameOverModal } from './GameOverModal'
 import { DIFFICULTIES, CANVAS_WIDTH, CANVAS_HEIGHT, type Difficulty } from './types'
 
 interface FlappyBirdGameProps {
@@ -16,63 +14,21 @@ interface FlappyBirdGameProps {
 }
 
 export function FlappyBirdGame({ difficulty }: FlappyBirdGameProps) {
-  const queryClient = useQueryClient()
-  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle')
-  const [submitError, setSubmitError] = useState<string>()
-  const [lastSubmittedScore, setLastSubmittedScore] = useState<number | null>(
-    null
-  )
+  const { submitStatus, submitError, startNewAttempt, submitScore, retrySubmit } =
+    useScoreSubmission('flappybird', difficulty)
 
-  const submitMutation = useMutation({
-    mutationFn: (score: number) =>
-      scoreApi.submit({
-        gameType: 'flappybird',
-        difficulty,
-        score,
-      }),
-    onMutate: () => setSubmitStatus('submitting'),
-    onSuccess: () => {
-      setSubmitStatus('success')
-      queryClient.invalidateQueries({ queryKey: ['scores'] })
-    },
-    onError: (err) => {
-      setSubmitStatus('error')
-      setSubmitError(extractErrorMessage(err))
-    },
-  })
-
-  const handleGameOver = useCallback(
-    (finalScore: number) => {
-      if (finalScore > 0 && lastSubmittedScore !== finalScore) {
-        setLastSubmittedScore(finalScore)
-        submitMutation.mutate(finalScore)
-      }
-    },
-    [submitMutation, lastSubmittedScore]
-  )
-
-  const game = useFlappyBirdGame({ difficulty, onGameOver: handleGameOver })
+  const game = useFlappyBirdGame({ difficulty, onGameOver: submitScore })
 
   useEffect(() => {
     game.reset()
-    setSubmitStatus('idle')
-    setSubmitError(undefined)
-    setLastSubmittedScore(null)
+    startNewAttempt()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [difficulty])
 
   const handlePlayAgain = useCallback(() => {
     game.reset()
-    setSubmitStatus('idle')
-    setSubmitError(undefined)
-    setLastSubmittedScore(null)
-  }, [game])
-
-  const handleRetrySubmit = useCallback(() => {
-    if (lastSubmittedScore !== null) {
-      submitMutation.mutate(lastSubmittedScore)
-    }
-  }, [submitMutation, lastSubmittedScore])
+    startNewAttempt()
+  }, [game, startNewAttempt])
 
   const config = DIFFICULTIES[difficulty]
   const showIdleHint = game.status === 'idle'
@@ -158,7 +114,7 @@ export function FlappyBirdGame({ difficulty }: FlappyBirdGameProps) {
           submitStatus={submitStatus}
           submitError={submitError}
           onPlayAgain={handlePlayAgain}
-          onRetrySubmit={handleRetrySubmit}
+          onRetrySubmit={retrySubmit}
         />
       )}
     </div>

@@ -6,10 +6,21 @@ export type GameType = 'snake' | 'tictactoe' | 'flappybird'
 
 export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD'
 
+export interface StartSessionRequest {
+  gameType: GameType
+  difficulty: Difficulty
+}
+
+export interface StartSessionResponse {
+  sessionId: string
+  expiresAt: string
+}
+
 export interface ScoreSubmitRequest {
   gameType: GameType
   difficulty: Difficulty
   score: number
+  sessionId: string
 }
 
 export interface ScoreResponse {
@@ -23,6 +34,9 @@ export interface ScoreResponse {
 }
 
 export const scoreApi = {
+  startSession: (data: StartSessionRequest) =>
+    api.post<StartSessionResponse>('/api/scores/sessions', data).then((r) => r.data),
+
   submit: (data: ScoreSubmitRequest) =>
     api.post<ScoreResponse>('/api/scores', data).then((r) => r.data),
 
