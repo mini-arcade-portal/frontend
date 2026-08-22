@@ -9,7 +9,7 @@ import { useFlappyBirdGame } from './useFlappyBirdGame'
 import { FlappyBirdBoard } from './FlappyBirdBoard'
 import { ScorePanel } from './ScorePanel'
 import { GameOverModal, type SubmitStatus } from './GameOverModal'
-import { DIFFICULTIES, type Difficulty } from './types'
+import { DIFFICULTIES, CANVAS_WIDTH, CANVAS_HEIGHT, type Difficulty } from './types'
 
 interface FlappyBirdGameProps {
   difficulty: Difficulty
@@ -79,9 +79,9 @@ export function FlappyBirdGame({ difficulty }: FlappyBirdGameProps) {
   const showGameOver = game.status === 'gameover'
 
   return (
-    <div className="grid lg:grid-cols-[minmax(0,1fr)_280px] gap-6 max-w-[1080px] mx-auto animate-pop">
+    <div className="grid lg:grid-cols-[minmax(0,1fr)_280px] gap-6 max-w-[1080px] mx-auto animate-pop h-full">
       {/* Bal: játék kártya */}
-      <div className="card-playful p-6">
+      <div className="card-playful p-6 flex flex-col h-full">
         {/* Header — kompakt */}
         <div className="flex items-start justify-between mb-5 gap-4">
           <div className="min-w-0">
@@ -112,10 +112,10 @@ export function FlappyBirdGame({ difficulty }: FlappyBirdGameProps) {
         </div>
 
         {/* Board area */}
-        <div className="relative flex justify-center">
+        <div className="relative flex justify-center items-center flex-1 min-h-0">
           <div
-            className="relative w-full"
-            style={{ maxWidth: 'min(420px, calc(100vh - 280px))' }}
+            className="relative"
+            style={{ height: `min(100%, ${CANVAS_HEIGHT}px)`, aspectRatio: `${CANVAS_WIDTH} / ${CANVAS_HEIGHT}`, width: 'auto' }}
           >
             <FlappyBirdBoard canvasRef={game.canvasRef} onFlap={game.flap} />
 
