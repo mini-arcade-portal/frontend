@@ -2,7 +2,7 @@ import { api } from './client'
 
 
 
-export type GameType = 'snake' | 'tictactoe'
+export type GameType = 'snake' | 'tictactoe' | 'flappybird'
 
 export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD'
 

@@ -28,6 +28,14 @@ const games: GameCardData[] = [
     bg: 'bg-gradient-to-br from-[#ffd9c0] to-pink',
     iconColor: 'pink',
   },
+  {
+    slug: 'flappybird',
+    title: 'Flappy Bird',
+    icon: '🐤',
+    description: 'Repülj a csövek között. Egy kattintás, és már zuhansz is.',
+    bg: 'bg-gradient-to-br from-[#bfe8ff] to-sky',
+    iconColor: 'sky',
+  },
 ]
 
 export function HomePage() {
