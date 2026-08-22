@@ -1,20 +1,18 @@
-import type { Board, CellValue, RoundStatus } from './types'
+import type { Board, CellValue } from './types'
 
 interface TicTacToeBoardProps {
   board: Board
-  roundStatus: RoundStatus
+  isClickable: boolean
   winningLine: readonly number[] | null
   onCellClick: (index: number) => void
 }
 
 export function TicTacToeBoard({
   board,
-  roundStatus,
+  isClickable,
   winningLine,
   onCellClick,
 }: TicTacToeBoardProps) {
-  const isClickable = roundStatus === 'idle'
-
   return (
     <div className="flex justify-center">
       <div

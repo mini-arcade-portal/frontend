@@ -1,5 +1,7 @@
 export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD'
 
+export type Opponent = 'AI' | 'FRIEND'
+
 export type Player = 'X' | 'O'
 
 export type CellValue = Player | null

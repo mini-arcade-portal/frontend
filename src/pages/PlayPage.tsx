@@ -3,6 +3,7 @@ import { Navigate, useParams, useSearchParams } from 'react-router-dom'
 import { SnakeGame } from '@/games/snake/SnakeGame'
 import { DifficultyPicker as SnakeDifficultyPicker } from '@/games/snake/DifficultyPicker'
 import { TicTacToeGame } from '@/games/tictactoe/TicTacToeGame'
+import { TicTacToeFriendGame } from '@/games/tictactoe/TicTacToeFriendGame'
 import { DifficultyPicker as TicTacToeDifficultyPicker } from '@/games/tictactoe/DifficultyPicker'
 import type { Difficulty } from '@/api/scores'
 
@@ -28,6 +29,9 @@ export function PlayPage() {
   }
 
   if (slug === 'tictactoe') {
+    if (searchParams.get('opponent') === 'friend') {
+      return <TicTacToeFriendGame />
+    }
     return difficulty ? (
       <TicTacToeGame difficulty={difficulty} />
     ) : (

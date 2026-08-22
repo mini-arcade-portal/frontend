@@ -132,7 +132,7 @@ export function TicTacToeGame({ difficulty }: TicTacToeGameProps) {
         {/* Board */}
         <TicTacToeBoard
           board={game.board}
-          roundStatus={game.roundStatus}
+          isClickable={game.roundStatus === 'idle'}
           winningLine={game.winningLine}
           onCellClick={game.playCell}
         />

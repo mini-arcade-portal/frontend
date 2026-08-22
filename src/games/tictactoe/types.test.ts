@@ -54,3 +54,11 @@ describe('calculateFinalScore', () => {
     }
   )
 })
+
+describe('DIFFICULTIES.drawCountsForStreak', () => {
+  it('only HARD lets a draw continue the streak (unbeatable AI)', () => {
+    expect(DIFFICULTIES.EASY.drawCountsForStreak).toBe(false)
+    expect(DIFFICULTIES.MEDIUM.drawCountsForStreak).toBe(false)
+    expect(DIFFICULTIES.HARD.drawCountsForStreak).toBe(true)
+  })
+})
