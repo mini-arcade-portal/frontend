@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate, useParams, Link } from 'react-router-dom'
 import { scoreApi, type GameType, type ScoreResponse } from '@/api/scores'
 import { useAuthStore } from '@/store/authStore'
 import { Button } from '@/components/Button'
@@ -12,8 +11,14 @@ const tabs: { value: GameType; label: string }[] = [
   { value: 'flappybird', label: '🐤 Flappy Bird' },
 ]
 
+function isGameType(value: string | undefined): value is GameType {
+  return tabs.some((tab) => tab.value === value)
+}
+
 export function LeaderboardPage() {
-  const [activeTab, setActiveTab] = useState<GameType>('snake')
+  const { gameType } = useParams<{ gameType?: string }>()
+  const navigate = useNavigate()
+  const activeTab: GameType = isGameType(gameType) ? gameType : 'snake'
   const currentUser = useAuthStore((s) => s.user)
 
   const { data: scores, isLoading } = useQuery({
@@ -42,7 +47,7 @@ export function LeaderboardPage() {
         {tabs.map((tab) => (
           <button
             key={tab.value}
-            onClick={() => setActiveTab(tab.value)}
+            onClick={() => navigate(`/leaderboard/${tab.value}`)}
             className={[
               'bg-cream text-ink border-[3px] border-ink px-5 py-2.5 rounded-2xl font-bold text-sm',
               'shadow-hard-sm transition-transform',

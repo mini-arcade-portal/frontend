@@ -85,7 +85,7 @@ export function GameOverModal({
                 Más szint
               </Button>
             </Link>
-            <Link to="/leaderboard" className="contents">
+            <Link to="/leaderboard/tictactoe" className="contents">
               <Button variant="sky" fullWidth>
                 Ranglista
               </Button>

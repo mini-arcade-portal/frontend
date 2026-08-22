@@ -45,7 +45,7 @@ export function App() {
           {/* protected */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
-            <Route path="/leaderboard" element={<LeaderboardPage />} />
+            <Route path="/leaderboard/:gameType?" element={<LeaderboardPage />} />
             <Route path="/me" element={<MyScoresPage />} />
           </Route>
         </Route>
