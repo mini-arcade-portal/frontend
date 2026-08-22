@@ -1,15 +1,13 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-import { scoreApi } from '@/api/scores'
-import { extractErrorMessage } from '@/api/client'
+import { useScoreSubmission } from '@/hooks/useScoreSubmission'
 
 import { useTicTacToeGame } from './useTicTacToeGame'
 import { TicTacToeBoard } from './TicTacToeBoard'
 import { StatusBar } from './StatusBar'
 import { ScorePanel } from './ScorePanel'
-import { GameOverModal, type SubmitStatus } from './GameOverModal'
+import { GameOverModal } from './GameOverModal'
 import {
   calculateFinalScore,
   DIFFICULTIES,
@@ -21,40 +19,14 @@ interface TicTacToeGameProps {
 }
 
 export function TicTacToeGame({ difficulty }: TicTacToeGameProps) {
-  const queryClient = useQueryClient()
-  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle')
-  const [submitError, setSubmitError] = useState<string>()
-  const [lastSubmittedStreak, setLastSubmittedStreak] = useState<number | null>(
-    null
-  )
-
-  const submitMutation = useMutation({
-    mutationFn: (finalScore: number) =>
-      scoreApi.submit({
-        gameType: 'tictactoe',
-        difficulty,
-        score: finalScore,
-      }),
-    onMutate: () => setSubmitStatus('submitting'),
-    onSuccess: () => {
-      setSubmitStatus('success')
-      queryClient.invalidateQueries({ queryKey: ['scores'] })
-    },
-    onError: (err) => {
-      setSubmitStatus('error')
-      setSubmitError(extractErrorMessage(err))
-    },
-  })
+  const { submitStatus, submitError, startNewAttempt, submitScore, retrySubmit } =
+    useScoreSubmission('tictactoe', difficulty)
 
   const handleGameOver = useCallback(
     (finalStreak: number) => {
-      const finalScore = calculateFinalScore(finalStreak, difficulty)
-      if (finalScore > 0 && lastSubmittedStreak !== finalStreak) {
-        setLastSubmittedStreak(finalStreak)
-        submitMutation.mutate(finalScore)
-      }
+      submitScore(calculateFinalScore(finalStreak, difficulty))
     },
-    [submitMutation, lastSubmittedStreak, difficulty]
+    [submitScore, difficulty]
   )
 
   const game = useTicTacToeGame({ difficulty, onGameOver: handleGameOver })
@@ -62,25 +34,14 @@ export function TicTacToeGame({ difficulty }: TicTacToeGameProps) {
   // Difficulty változáskor reset
   useEffect(() => {
     game.reset()
-    setSubmitStatus('idle')
-    setSubmitError(undefined)
-    setLastSubmittedStreak(null)
+    startNewAttempt()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [difficulty])
 
   const handlePlayAgain = useCallback(() => {
     game.reset()
-    setSubmitStatus('idle')
-    setSubmitError(undefined)
-    setLastSubmittedStreak(null)
-  }, [game])
-
-  const handleRetrySubmit = useCallback(() => {
-    if (lastSubmittedStreak !== null) {
-      const finalScore = calculateFinalScore(lastSubmittedStreak, difficulty)
-      submitMutation.mutate(finalScore)
-    }
-  }, [submitMutation, lastSubmittedStreak, difficulty])
+    startNewAttempt()
+  }, [game, startNewAttempt])
 
   const config = DIFFICULTIES[difficulty]
   const showGameOver = game.gameStatus === 'gameover'
@@ -161,7 +122,7 @@ export function TicTacToeGame({ difficulty }: TicTacToeGameProps) {
           submitStatus={submitStatus}
           submitError={submitError}
           onPlayAgain={handlePlayAgain}
-          onRetrySubmit={handleRetrySubmit}
+          onRetrySubmit={retrySubmit}
         />
       )}
     </div>

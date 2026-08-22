@@ -1,15 +1,13 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/Button'
-import { scoreApi } from '@/api/scores'
-import { extractErrorMessage } from '@/api/client'
+import { useScoreSubmission } from '@/hooks/useScoreSubmission'
 
 import { useSnakeGame } from './useSnakeGame'
 import { SnakeBoard } from './SnakeBoard'
 import { ScorePanel } from './ScorePanel'
-import { GameOverModal, type SubmitStatus } from './GameOverModal'
+import { GameOverModal } from './GameOverModal'
 import { DIFFICULTIES, type Difficulty } from './types'
 
 interface SnakeGameProps {
@@ -17,61 +15,21 @@ interface SnakeGameProps {
 }
 
 export function SnakeGame({ difficulty }: SnakeGameProps) {
-  const queryClient = useQueryClient()
-  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle')
-  const [submitError, setSubmitError] = useState<string>()
-  const [lastSubmittedScore, setLastSubmittedScore] = useState<number | null>(null)
+  const { submitStatus, submitError, startNewAttempt, submitScore, retrySubmit } =
+    useScoreSubmission('snake', difficulty)
 
-  const submitMutation = useMutation({
-    mutationFn: (score: number) =>
-      scoreApi.submit({
-        gameType: 'snake',
-        difficulty,
-        score,
-      }),
-    onMutate: () => setSubmitStatus('submitting'),
-    onSuccess: () => {
-      setSubmitStatus('success')
-      queryClient.invalidateQueries({ queryKey: ['scores'] })
-    },
-    onError: (err) => {
-      setSubmitStatus('error')
-      setSubmitError(extractErrorMessage(err))
-    },
-  })
-
-  const handleGameOver = useCallback(
-    (finalScore: number) => {
-      if (finalScore > 0 && lastSubmittedScore !== finalScore) {
-        setLastSubmittedScore(finalScore)
-        submitMutation.mutate(finalScore)
-      }
-    },
-    [submitMutation, lastSubmittedScore]
-  )
-
-  const game = useSnakeGame({ difficulty, onGameOver: handleGameOver })
+  const game = useSnakeGame({ difficulty, onGameOver: submitScore })
 
   useEffect(() => {
     game.reset()
-    setSubmitStatus('idle')
-    setSubmitError(undefined)
-    setLastSubmittedScore(null)
+    startNewAttempt()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [difficulty])
 
   const handlePlayAgain = useCallback(() => {
     game.reset()
-    setSubmitStatus('idle')
-    setSubmitError(undefined)
-    setLastSubmittedScore(null)
-  }, [game])
-
-  const handleRetrySubmit = useCallback(() => {
-    if (lastSubmittedScore !== null) {
-      submitMutation.mutate(lastSubmittedScore)
-    }
-  }, [submitMutation, lastSubmittedScore])
+    startNewAttempt()
+  }, [game, startNewAttempt])
 
   const config = DIFFICULTIES[difficulty]
   const showIdleHint = game.status === 'idle'
@@ -189,7 +147,7 @@ export function SnakeGame({ difficulty }: SnakeGameProps) {
           submitStatus={submitStatus}
           submitError={submitError}
           onPlayAgain={handlePlayAgain}
-          onRetrySubmit={handleRetrySubmit}
+          onRetrySubmit={retrySubmit}
         />
       )}
     </div>
