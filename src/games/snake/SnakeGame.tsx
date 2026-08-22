@@ -37,9 +37,9 @@ export function SnakeGame({ difficulty }: SnakeGameProps) {
   const showGameOver = game.status === 'gameover'
 
   return (
-    <div className="grid lg:grid-cols-[minmax(0,1fr)_280px] gap-6 max-w-[1080px] mx-auto animate-pop">
+    <div className="grid lg:grid-cols-[minmax(0,1fr)_280px] gap-6 max-w-[1080px] mx-auto animate-pop h-full">
       {/* Bal: játék kártya */}
-      <div className="card-playful p-6">
+      <div className="card-playful p-6 flex flex-col h-full">
         {/* Header — kompakt */}
         <div className="flex items-start justify-between mb-5 gap-4">
           <div className="min-w-0">
@@ -70,10 +70,10 @@ export function SnakeGame({ difficulty }: SnakeGameProps) {
         </div>
 
         {/* Board area*/}
-        <div className="relative flex justify-center">
+        <div className="relative flex justify-center items-center flex-1 min-h-0">
           <div
-            className="relative w-full"
-            style={{ maxWidth: 'min(680px, calc(100vh - 280px))' }}
+            className="relative"
+            style={{ height: 'min(100%, 680px)', aspectRatio: '1', width: 'auto' }}
           >
             <SnakeBoard snake={game.snake} food={game.food} />
 

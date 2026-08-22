@@ -23,17 +23,14 @@ export function SnakeBoard({ snake, food }: SnakeBoardProps) {
   }
 
   return (
-    <div className="flex justify-center">
-      <div
-        className="aspect-square bg-[#f5ead0] border-[3px] border-ink rounded-2xl grid gap-px p-1.5 w-full"
-        style={{
-          maxWidth: 'min(680px, calc(100vh - 280px))',
-          gridTemplateColumns: `repeat(${BOARD_SIZE}, 1fr)`,
-          gridTemplateRows: `repeat(${BOARD_SIZE}, 1fr)`,
-        }}
-      >
-        {cells}
-      </div>
+    <div
+      className="aspect-square bg-[#f5ead0] border-[3px] border-ink rounded-2xl grid gap-px p-1.5 h-full w-full"
+      style={{
+        gridTemplateColumns: `repeat(${BOARD_SIZE}, 1fr)`,
+        gridTemplateRows: `repeat(${BOARD_SIZE}, 1fr)`,
+      }}
+    >
+      {cells}
     </div>
   )
 }
