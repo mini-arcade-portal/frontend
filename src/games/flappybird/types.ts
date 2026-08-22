@@ -15,6 +15,12 @@ export interface Pipe {
   passed: boolean
 }
 
+export interface Cloud {
+  x: number
+  y: number
+  scale: number
+}
+
 /**
  * Difficulty-specific paraméterek.
  * - scrollSpeed: mennyi px/s sebességgel görögnek a csövek. Nagyobb = gyorsabb.
@@ -76,4 +82,13 @@ export const MAX_FALL_SPEED = 700 // px/s
 // Csövek
 export const PIPE_WIDTH = 64
 export const PIPE_SPACING = 260 // px két cső-pár vízszintes távolsága
-export const PIPE_MARGIN = 60 // px a rés közepe minimum ennyire legyen a tetőtől/talajtól
+export const PIPE_MIN_BODY = 30 // px, ennyi tömör cső mindenképp maradjon a rés fölött/alatt
+export const PIPE_CAP_HEIGHT = 24
+export const PIPE_CAP_OVERHANG = 6 // px, ennyivel szélesebb a "sapka" mindkét oldalon
+
+// Szárnycsapkodás anim.: mennyi ideig tart egy flap-lökés vizuális kifutása
+export const WING_FLAP_DURATION = 0.25 // s
+
+// Felhők — ambiens háttéranimáció, a nehézségtől függetlenül lassan sodródnak
+export const CLOUD_COUNT = 4
+export const CLOUD_SPEED = 20 // px/s

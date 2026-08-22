@@ -4,19 +4,100 @@ import {
   BIRD_X,
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
+  CLOUD_COUNT,
+  CLOUD_SPEED,
   DIFFICULTIES,
   FLAP_VELOCITY,
   GRAVITY,
   GROUND_HEIGHT,
   MAX_FALL_SPEED,
-  PIPE_MARGIN,
+  PIPE_CAP_HEIGHT,
+  PIPE_CAP_OVERHANG,
+  PIPE_MIN_BODY,
   PIPE_SPACING,
   PIPE_WIDTH,
+  WING_FLAP_DURATION,
   type Bird,
+  type Cloud,
   type Difficulty,
   type GameStatus,
   type Pipe,
 } from './types'
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value))
+}
+
+function lerp(from: number, to: number, t: number): number {
+  return from + (to - from) * t
+}
+
+function drawCloud(ctx: CanvasRenderingContext2D, cloud: Cloud) {
+  const { x, y, scale } = cloud
+  ctx.beginPath()
+  ctx.ellipse(x, y, 26 * scale, 16 * scale, 0, 0, Math.PI * 2)
+  ctx.ellipse(x + 20 * scale, y + 4 * scale, 20 * scale, 13 * scale, 0, 0, Math.PI * 2)
+  ctx.ellipse(x - 20 * scale, y + 4 * scale, 18 * scale, 12 * scale, 0, 0, Math.PI * 2)
+  ctx.fill()
+}
+
+function drawBird(
+  ctx: CanvasRenderingContext2D,
+  bird: Bird,
+  timeSinceFlap: number,
+  ink: string
+) {
+  const tilt = clamp(bird.velocity / 500, -0.5, 1.4)
+  const wingPhase = clamp(1 - timeSinceFlap / WING_FLAP_DURATION, 0, 1)
+  const wingAngle = lerp(0.3, -0.9, wingPhase)
+
+  ctx.save()
+  ctx.translate(BIRD_X, bird.y)
+  ctx.rotate(tilt)
+  ctx.lineWidth = 2.5
+  ctx.strokeStyle = ink
+
+  // Szárny (a test mögött, a hátsó felén)
+  ctx.save()
+  ctx.translate(-BIRD_RADIUS * 0.2, BIRD_RADIUS * 0.1)
+  ctx.rotate(wingAngle)
+  ctx.fillStyle = '#ff8fab'
+  ctx.beginPath()
+  ctx.ellipse(0, 0, BIRD_RADIUS * 0.85, BIRD_RADIUS * 0.5, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.stroke()
+  ctx.restore()
+
+  // Test
+  ctx.fillStyle = '#ffc857'
+  ctx.beginPath()
+  ctx.ellipse(0, 0, BIRD_RADIUS * 1.15, BIRD_RADIUS, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.stroke()
+
+  // Csőr
+  ctx.fillStyle = '#ff7a5c'
+  ctx.beginPath()
+  ctx.moveTo(BIRD_RADIUS * 0.7, -BIRD_RADIUS * 0.1)
+  ctx.lineTo(BIRD_RADIUS * 1.5, BIRD_RADIUS * 0.05)
+  ctx.lineTo(BIRD_RADIUS * 0.7, BIRD_RADIUS * 0.3)
+  ctx.closePath()
+  ctx.fill()
+  ctx.stroke()
+
+  // Szem
+  ctx.fillStyle = '#ffffff'
+  ctx.beginPath()
+  ctx.arc(BIRD_RADIUS * 0.35, -BIRD_RADIUS * 0.35, BIRD_RADIUS * 0.4, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.stroke()
+  ctx.fillStyle = ink
+  ctx.beginPath()
+  ctx.arc(BIRD_RADIUS * 0.48, -BIRD_RADIUS * 0.35, BIRD_RADIUS * 0.18, 0, Math.PI * 2)
+  ctx.fill()
+
+  ctx.restore()
+}
 
 interface UseFlappyBirdGameOptions {
   difficulty: Difficulty
@@ -35,14 +116,29 @@ interface FlappyBirdGameState {
 interface World {
   bird: Bird
   pipes: Pipe[]
+  clouds: Cloud[]
   distanceSinceLastPipe: number
+  /** Másodpercek az utolsó flap óta — a szárnycsapás-animációhoz */
+  timeSinceFlap: number
+}
+
+function randomCloud(x: number): Cloud {
+  return {
+    x,
+    y: 30 + Math.random() * 160,
+    scale: 0.6 + Math.random() * 0.8,
+  }
 }
 
 function initialWorld(): World {
   return {
     bird: { y: CANVAS_HEIGHT / 2, velocity: 0 },
     pipes: [],
+    clouds: Array.from({ length: CLOUD_COUNT }, (_, i) =>
+      randomCloud((i / CLOUD_COUNT) * CANVAS_WIDTH)
+    ),
     distanceSinceLastPipe: 0,
+    timeSinceFlap: WING_FLAP_DURATION,
   }
 }
 
@@ -70,7 +166,8 @@ export function useFlappyBirdGame({
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      const { bird, pipes } = worldRef.current
+      const { bird, pipes, clouds, timeSinceFlap } = worldRef.current
+      const INK = '#1a1d3a'
 
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
@@ -78,29 +175,55 @@ export function useFlappyBirdGame({
       ctx.fillStyle = '#bfe8ff'
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
+      // Felhők
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
+      for (const c of clouds) {
+        drawCloud(ctx, c)
+      }
+
       // Csövek
-      ctx.fillStyle = '#3fc28a'
+      ctx.lineWidth = 3
+      ctx.strokeStyle = INK
       for (const p of pipes) {
         const gapTop = p.gapY - config.pipeGap / 2
         const gapBottom = p.gapY + config.pipeGap / 2
+
+        ctx.fillStyle = '#3fc28a'
         ctx.fillRect(p.x, 0, PIPE_WIDTH, gapTop)
+        ctx.strokeRect(p.x, 0, PIPE_WIDTH, gapTop)
         ctx.fillRect(
           p.x,
           gapBottom,
           PIPE_WIDTH,
           CANVAS_HEIGHT - GROUND_HEIGHT - gapBottom
         )
+        ctx.strokeRect(
+          p.x,
+          gapBottom,
+          PIPE_WIDTH,
+          CANVAS_HEIGHT - GROUND_HEIGHT - gapBottom
+        )
+
+        // "Sapkák" a rés két oldalán, a klasszikus Flappy Bird cső-peremhez hasonlóan
+        ctx.fillStyle = '#2fa374'
+        const capX = p.x - PIPE_CAP_OVERHANG
+        const capWidth = PIPE_WIDTH + PIPE_CAP_OVERHANG * 2
+        ctx.fillRect(capX, gapTop - PIPE_CAP_HEIGHT, capWidth, PIPE_CAP_HEIGHT)
+        ctx.strokeRect(capX, gapTop - PIPE_CAP_HEIGHT, capWidth, PIPE_CAP_HEIGHT)
+        ctx.fillRect(capX, gapBottom, capWidth, PIPE_CAP_HEIGHT)
+        ctx.strokeRect(capX, gapBottom, capWidth, PIPE_CAP_HEIGHT)
       }
 
       // Talaj
       ctx.fillStyle = '#f5ead0'
       ctx.fillRect(0, CANVAS_HEIGHT - GROUND_HEIGHT, CANVAS_WIDTH, GROUND_HEIGHT)
+      ctx.beginPath()
+      ctx.moveTo(0, CANVAS_HEIGHT - GROUND_HEIGHT)
+      ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_HEIGHT)
+      ctx.stroke()
 
       // Madár
-      ctx.fillStyle = '#ff5d8f'
-      ctx.beginPath()
-      ctx.arc(BIRD_X, bird.y, BIRD_RADIUS, 0, Math.PI * 2)
-      ctx.fill()
+      drawBird(ctx, bird, timeSinceFlap, INK)
     },
     [config.pipeGap]
   )
@@ -118,6 +241,19 @@ export function useFlappyBirdGame({
       const dt = Math.min((ts - lastTsRef.current) / 1000, 1 / 30)
       lastTsRef.current = ts
 
+      // Felhők és szárnycsapás-animáció mindig sodródnak/telnek, állapottól függetlenül
+      const ambientWorld = worldRef.current
+      ambientWorld.timeSinceFlap += dt
+      for (const c of ambientWorld.clouds) {
+        c.x -= CLOUD_SPEED * dt
+        if (c.x < -40) {
+          const fresh = randomCloud(CANVAS_WIDTH + 40)
+          c.x = fresh.x
+          c.y = fresh.y
+          c.scale = fresh.scale
+        }
+      }
+
       if (statusRef.current === 'playing') {
         const world = worldRef.current
 
@@ -130,8 +266,10 @@ export function useFlappyBirdGame({
         world.distanceSinceLastPipe += config.scrollSpeed * dt
         if (world.distanceSinceLastPipe >= PIPE_SPACING) {
           world.distanceSinceLastPipe = 0
-          const usableHeight = CANVAS_HEIGHT - GROUND_HEIGHT - PIPE_MARGIN * 2
-          const gapY = PIPE_MARGIN + Math.random() * usableHeight
+          const gapHalf = config.pipeGap / 2
+          const minGapY = gapHalf + PIPE_MIN_BODY
+          const maxGapY = CANVAS_HEIGHT - GROUND_HEIGHT - gapHalf - PIPE_MIN_BODY
+          const gapY = minGapY + Math.random() * (maxGapY - minGapY)
           world.pipes.push({ x: CANVAS_WIDTH, gapY, passed: false })
         }
 
@@ -199,6 +337,7 @@ export function useFlappyBirdGame({
       setStatus('playing')
     }
     worldRef.current.bird.velocity = FLAP_VELOCITY
+    worldRef.current.timeSinceFlap = 0
   }, [])
 
   const reset = useCallback(() => {
