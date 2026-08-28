@@ -20,7 +20,8 @@ api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     const status = error.response?.status
-    if (status === 401 || status === 403) {
+    const hadToken = !!error.config?.headers?.Authorization
+    if ((status === 401 || status === 403) && hadToken) {
       useAuthStore.getState().expireSession()
     }
     return Promise.reject(error)
