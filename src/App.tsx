@@ -23,7 +23,7 @@ function GameLayout() {
   return (
     <div className="max-w-[1240px] mx-auto px-4 md:px-8 pt-6 pb-4 flex flex-col lg:h-[100dvh]">
       <TopNav />
-      <div className="flex-1 min-h-0 lg:overflow-hidden">
+      <div className="flex-1 min-h-0 lg:overflow-y-auto">
         <Outlet />
       </div>
     </div>
