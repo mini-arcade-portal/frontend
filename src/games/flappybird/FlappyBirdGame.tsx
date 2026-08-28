@@ -70,8 +70,8 @@ export function FlappyBirdGame({ difficulty }: FlappyBirdGameProps) {
         {/* Board area */}
         <div className="relative flex justify-center items-center flex-1 min-h-0">
           <div
-            className="relative"
-            style={{ height: `min(100%, ${CANVAS_HEIGHT}px)`, aspectRatio: `${CANVAS_WIDTH} / ${CANVAS_HEIGHT}`, width: 'auto' }}
+            className="relative w-[min(100%,400px)] h-auto lg:w-auto lg:h-[min(100%,600px)]"
+            style={{ aspectRatio: `${CANVAS_WIDTH} / ${CANVAS_HEIGHT}` }}
           >
             <FlappyBirdBoard canvasRef={game.canvasRef} onFlap={game.flap} />
 

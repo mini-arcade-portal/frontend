@@ -23,13 +23,13 @@ export function DifficultyPicker() {
   return (
     <div className="animate-pop">
       {/* Header */}
-      <div className="card-playful p-10 mb-8 relative overflow-hidden">
+      <div className="card-playful p-6 sm:p-10 mb-8 relative overflow-hidden">
         <div className="absolute w-40 h-40 bg-sky border-[3px] border-ink rounded-full -top-12 -right-12" />
         <div className="relative z-10">
           <span className="inline-block font-mono text-xs font-bold bg-ink text-cream px-3 py-1.5 rounded-lg tracking-widest uppercase mb-4">
             / 🐤 Flappy Bird
           </span>
-          <h1 className="font-display font-black text-5xl md:text-6xl tracking-tight">
+          <h1 className="font-display font-black text-3xl sm:text-5xl md:text-6xl tracking-tight break-words">
             Válassz nehézséget
           </h1>
           <p className="text-ink-2 font-medium mt-3 max-w-lg">
@@ -92,7 +92,7 @@ export function DifficultyPicker() {
           size="lg"
           disabled={!selected}
           onClick={handleStart}
-          className="min-w-[260px]"
+          className="w-full sm:w-auto sm:min-w-[260px]"
         >
           {selected
             ? `Start ${DIFFICULTIES[selected].label} →`

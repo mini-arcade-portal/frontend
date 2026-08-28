@@ -16,9 +16,8 @@ export function TicTacToeBoard({
   return (
     <div className="flex justify-center">
       <div
-        className="aspect-square bg-[#f5ead0] border-[3px] border-ink rounded-2xl grid gap-2 p-3 w-full"
+        className="aspect-square bg-[#f5ead0] border-[3px] border-ink rounded-2xl grid gap-2 p-3 w-full max-w-[420px] lg:max-w-[min(480px,calc(100dvh_-_400px))]"
         style={{
-          maxWidth: 'min(480px, calc(100dvh - 400px))',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gridTemplateRows: 'repeat(3, 1fr)',
         }}

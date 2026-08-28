@@ -12,7 +12,7 @@ import { MyScoresPage } from '@/pages/MyScoresPage'
 
 function Layout() {
   return (
-    <div className="max-w-[1240px] mx-auto px-8 py-6 pb-16">
+    <div className="max-w-[1240px] mx-auto px-4 md:px-8 py-6 pb-16">
       <TopNav />
       <Outlet />
     </div>
@@ -21,12 +21,9 @@ function Layout() {
 
 function GameLayout() {
   return (
-    <div
-      className="max-w-[1240px] mx-auto px-8 pt-6 pb-4 flex flex-col"
-      style={{ height: '100dvh' }}
-    >
+    <div className="max-w-[1240px] mx-auto px-4 md:px-8 pt-6 pb-4 flex flex-col lg:h-[100dvh]">
       <TopNav />
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 lg:overflow-hidden">
         <Outlet />
       </div>
     </div>
