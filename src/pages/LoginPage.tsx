@@ -128,7 +128,7 @@ export function ArtPanel({
   subtitle: string
 }) {
   return (
-    <div className="card-playful p-12 relative overflow-hidden aspect-square grid place-items-center min-h-[400px]">
+    <div className="card-playful w-full p-8 sm:p-12 relative overflow-hidden aspect-square grid place-items-center min-h-[280px] sm:min-h-[400px]">
       <div className="absolute w-[70px] h-[70px] bg-mint border-[3px] border-ink rounded-2xl top-8 left-8 -rotate-12" />
       <div className="absolute w-[60px] h-[60px] bg-mustard border-[3px] border-ink rounded-full bottom-14 left-16" />
       <div className="absolute w-[50px] h-[50px] bg-coral border-[3px] border-ink rounded-2xl top-16 right-10 rotate-[20deg]" />

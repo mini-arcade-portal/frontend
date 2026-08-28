@@ -4,6 +4,7 @@ import { scoreApi, type GameType, type ScoreResponse } from '@/api/scores'
 import { useAuthStore } from '@/store/authStore'
 import { Button } from '@/components/Button'
 import { DifficultyBadge } from '@/components/DifficultyBadge'
+import { formatRelativeDate } from '@/utils/formatRelativeDate'
 
 const tabs: { value: GameType; label: string }[] = [
   { value: 'snake', label: '🐍 Snake' },
@@ -32,12 +33,12 @@ export function LeaderboardPage() {
   return (
     <div className="animate-pop">
       {/* Header */}
-      <div className="card-playful p-9 px-12 mb-6 relative overflow-hidden">
+      <div className="card-playful p-6 px-6 sm:p-9 sm:px-12 mb-6 relative overflow-hidden">
         <div className="absolute w-[140px] h-[140px] bg-mustard border-[3px] border-ink rounded-full -top-10 -right-10" />
         <span className="inline-block font-mono text-xs font-bold bg-ink text-cream px-3 py-1.5 rounded-lg tracking-widest uppercase mb-4">
           / Hall of fame
         </span>
-        <h1 className="font-display font-black text-5xl md:text-6xl tracking-tight">
+        <h1 className="font-display font-black text-3xl sm:text-5xl md:text-6xl tracking-tight break-words">
           Ranglista
         </h1>
       </div>
@@ -84,7 +85,7 @@ export function LeaderboardPage() {
           {/* Table */}
           {rest.length > 0 && (
             <div className="card-playful overflow-hidden p-0">
-              <div className="grid grid-cols-[70px_1fr_140px_1fr_140px] bg-ink text-cream py-3.5 px-6 font-mono text-[11px] font-semibold tracking-widest uppercase">
+              <div className="hidden sm:grid grid-cols-[70px_1fr_140px_1fr_140px] bg-ink text-cream py-3.5 px-6 font-mono text-[11px] font-semibold tracking-widest uppercase">
                 <div>Hely</div>
                 <div>Játékos</div>
                 <div>Szint</div>
@@ -159,7 +160,7 @@ function Podium({ score, place }: { score: ScoreResponse; place: 1 | 2 | 3 }) {
     <div
       className={[
         config.bg,
-        'text-ink border-[3px] border-ink rounded-3xl p-5 px-4 text-center shadow-hard relative',
+        'text-ink border-[3px] border-ink rounded-3xl p-3 px-2 sm:p-5 sm:px-4 text-center shadow-hard relative',
         config.translate,
       ].join(' ')}
     >
@@ -173,11 +174,11 @@ function Podium({ score, place }: { score: ScoreResponse; place: 1 | 2 | 3 }) {
       >
         {place}
       </div>
-      <div className="text-3xl mb-1">{config.crown}</div>
-      <div className="font-display font-extrabold text-xl tracking-tight mt-2 truncate">
+      <div className="text-2xl sm:text-3xl mb-1">{config.crown}</div>
+      <div className="font-display font-extrabold text-base sm:text-xl tracking-tight mt-2 truncate">
         {score.username}
       </div>
-      <div className="font-mono font-bold text-base mb-2">
+      <div className="font-mono font-bold text-sm sm:text-base mb-2">
         {score.score.toLocaleString()} pts
       </div>
       <div className="flex justify-center">
@@ -197,44 +198,60 @@ function ScoreRow({
   isMe: boolean
 }) {
   return (
-    <div
-      className={[
-        'grid grid-cols-[70px_1fr_140px_1fr_140px] items-center py-4 px-6 border-b-2 border-ink/10 font-semibold relative',
-        isMe ? 'bg-mustard/25' : '',
-      ].join(' ')}
-    >
-      {isMe && (
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 bg-ink text-mustard font-mono text-[10px] font-bold px-1.5 py-0.5 rounded">
-          TE
-        </span>
-      )}
-      <div className={['font-display font-extrabold text-xl', isMe ? 'pl-7' : ''].join(' ')}>
-        {rank}
+    <div className={isMe ? 'bg-mustard/25' : ''}>
+      {/* Deszktop/tablet: táblázat sor */}
+      <div
+        className={[
+          'hidden sm:grid grid-cols-[70px_1fr_140px_1fr_140px] items-center py-4 px-6 border-b-2 border-ink/10 font-semibold relative',
+        ].join(' ')}
+      >
+        {isMe && (
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 bg-ink text-mustard font-mono text-[10px] font-bold px-1.5 py-0.5 rounded">
+            TE
+          </span>
+        )}
+        <div className={['font-display font-extrabold text-xl', isMe ? 'pl-7' : ''].join(' ')}>
+          {rank}
+        </div>
+        <div>{score.username}</div>
+        <div>
+          <DifficultyBadge difficulty={score.difficulty} />
+        </div>
+        <div className="font-mono font-bold text-mint-deep">
+          {score.score.toLocaleString()}
+        </div>
+        <div className="font-mono text-sm text-ink-2 opacity-70 text-right">
+          {formatRelativeDate(score.createdAt)}
+        </div>
       </div>
-      <div>{score.username}</div>
-      <div>
-        <DifficultyBadge difficulty={score.difficulty} />
-      </div>
-      <div className="font-mono font-bold text-mint-deep">
-        {score.score.toLocaleString()}
-      </div>
-      <div className="font-mono text-sm text-ink-2 opacity-70 text-right">
-        {formatRelative(score.createdAt)}
+
+      {/* Mobil: kártya sor */}
+      <div className="sm:hidden flex items-center gap-3 py-3 px-4 border-b-2 border-ink/10 font-semibold">
+        <div className="font-display font-extrabold text-lg w-6 text-center shrink-0">
+          {rank}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 truncate">
+            <span className="truncate">{score.username}</span>
+            {isMe && (
+              <span className="shrink-0 bg-ink text-mustard font-mono text-[9px] font-bold px-1.5 py-0.5 rounded">
+                TE
+              </span>
+            )}
+          </div>
+          <div className="mt-1">
+            <DifficultyBadge difficulty={score.difficulty} />
+          </div>
+        </div>
+        <div className="text-right shrink-0">
+          <div className="font-mono font-bold text-mint-deep">
+            {score.score.toLocaleString()}
+          </div>
+          <div className="font-mono text-[11px] text-ink-2 opacity-70 mt-0.5">
+            {formatRelativeDate(score.createdAt)}
+          </div>
+        </div>
       </div>
     </div>
   )
-}
-
-function formatRelative(iso: string): string {
-  const now = Date.now()
-  const then = new Date(iso).getTime()
-  const diffMin = Math.floor((now - then) / 60000)
-  if (diffMin < 1) return 'most'
-  if (diffMin < 60) return `${diffMin} perce`
-  const diffH = Math.floor(diffMin / 60)
-  if (diffH < 24) return `${diffH} órája`
-  const diffD = Math.floor(diffH / 24)
-  if (diffD === 1) return 'tegnap'
-  if (diffD < 7) return `${diffD} napja`
-  return new Date(iso).toLocaleDateString('hu-HU')
 }

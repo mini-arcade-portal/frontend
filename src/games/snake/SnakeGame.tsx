@@ -6,6 +6,7 @@ import { useScoreSubmission } from '@/hooks/useScoreSubmission'
 
 import { useSnakeGame } from './useSnakeGame'
 import { SnakeBoard } from './SnakeBoard'
+import { SnakeTouchControls } from './SnakeTouchControls'
 import { ScorePanel } from './ScorePanel'
 import { GameOverModal } from './GameOverModal'
 import { DIFFICULTIES, type Difficulty } from './types'
@@ -71,10 +72,7 @@ export function SnakeGame({ difficulty }: SnakeGameProps) {
 
         {/* Board area*/}
         <div className="relative flex justify-center items-center flex-1 min-h-0">
-          <div
-            className="relative"
-            style={{ height: 'min(100%, 680px)', aspectRatio: '1', width: 'auto' }}
-          >
+          <div className="relative w-[min(100%,680px)] aspect-square h-auto lg:w-auto lg:h-[min(100%,680px)]">
             <SnakeBoard snake={game.snake} food={game.food} />
 
             {showIdleHint && (
@@ -84,8 +82,13 @@ export function SnakeGame({ difficulty }: SnakeGameProps) {
                     Készen állsz?
                   </div>
                   <div className="text-ink-2 font-medium text-sm">
-                    Nyomj meg egy <Kbd>↑</Kbd> <Kbd>↓</Kbd> <Kbd>←</Kbd>{' '}
-                    <Kbd>→</Kbd> billentyűt
+                    <span className="hidden lg:inline">
+                      Nyomj meg egy <Kbd>↑</Kbd> <Kbd>↓</Kbd> <Kbd>←</Kbd>{' '}
+                      <Kbd>→</Kbd> billentyűt
+                    </span>
+                    <span className="lg:hidden">
+                      Koppints egyet az irány gombok közül
+                    </span>
                   </div>
                 </div>
               </BoardOverlay>
@@ -110,7 +113,7 @@ export function SnakeGame({ difficulty }: SnakeGameProps) {
         </div>
 
         {/* Controls alul — kompakt */}
-        <div className="flex items-center justify-between mt-4">
+        <div className="hidden lg:flex items-center justify-between mt-4">
           <div className="flex gap-1">
             <Kbd>↑</Kbd>
             <Kbd>←</Kbd>
@@ -122,6 +125,16 @@ export function SnakeGame({ difficulty }: SnakeGameProps) {
             <Kbd>S</Kbd>
             <Kbd>D</Kbd>
           </div>
+          {game.status === 'playing' && (
+            <Button variant="pink" size="sm" onClick={game.togglePause}>
+              Szünet
+            </Button>
+          )}
+        </div>
+
+        {/* Touch D-pad — csak mobilon */}
+        <div className="lg:hidden flex flex-col items-center gap-3 mt-4">
+          <SnakeTouchControls onDirection={game.changeDirection} />
           {game.status === 'playing' && (
             <Button variant="pink" size="sm" onClick={game.togglePause}>
               Szünet
