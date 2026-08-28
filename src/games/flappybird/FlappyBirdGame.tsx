@@ -76,7 +76,7 @@ export function FlappyBirdGame({ difficulty }: FlappyBirdGameProps) {
             <FlappyBirdBoard canvasRef={game.canvasRef} onFlap={game.flap} />
 
             {showIdleHint && (
-              <BoardOverlay>
+              <BoardOverlay onActivate={game.flap}>
                 <div className="text-center px-6">
                   <div className="font-display font-black text-2xl mb-2">
                     Készen állsz?
@@ -121,9 +121,26 @@ export function FlappyBirdGame({ difficulty }: FlappyBirdGameProps) {
   )
 }
 
-function BoardOverlay({ children }: { children: React.ReactNode }) {
+function BoardOverlay({
+  children,
+  onActivate,
+}: {
+  children: React.ReactNode
+  onActivate?: () => void
+}) {
   return (
-    <div className="absolute inset-0 bg-cream/85 grid place-items-center rounded-2xl backdrop-blur-sm">
+    <div
+      className="absolute inset-0 bg-cream/85 grid place-items-center rounded-2xl backdrop-blur-sm cursor-pointer"
+      onClick={onActivate}
+      onTouchStart={
+        onActivate
+          ? (e) => {
+              e.preventDefault()
+              onActivate()
+            }
+          : undefined
+      }
+    >
       {children}
     </div>
   )
