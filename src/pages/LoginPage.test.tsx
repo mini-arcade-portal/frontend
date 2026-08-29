@@ -109,7 +109,9 @@ describe('LoginPage', () => {
     await user.type(screen.getByLabelText('Jelszó'), 'wrong')
     await user.click(screen.getByRole('button', { name: /Bejelentkezés/ }))
 
-    expect(await screen.findByText('Invalid credentials')).toBeInTheDocument()
+    expect(
+      await screen.findByText('Hibás felhasználónév vagy jelszó.')
+    ).toBeInTheDocument()
     expect(useAuthStore.getState().token).toBeNull()
   })
 })

@@ -17,6 +17,18 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>
 
+const LOGIN_ERROR_TRANSLATIONS: Record<string, string> = {
+  'Invalid credentials': 'Hibás felhasználónév vagy jelszó.',
+  'Username is required': 'Add meg a felhasználóneved.',
+  'Password is required': 'Add meg a jelszavad.',
+  'Validation failed': 'Érvénytelen adatok, ellenőrizd a mezőket.',
+  'An unexpected error occurred': 'Váratlan hiba történt, próbáld újra később.',
+}
+
+function translateLoginError(message: string): string {
+  return LOGIN_ERROR_TRANSLATIONS[message] ?? message
+}
+
 export function LoginPage() {
   const login = useAuthStore((s) => s.login)
   const sessionExpired = useAuthStore((s) => s.sessionExpired)
@@ -94,7 +106,7 @@ export function LoginPage() {
 
         {mutation.isError && (
           <div className="mb-4 p-3 rounded-xl bg-coral/10 border-2 border-coral text-coral text-sm font-medium">
-            {extractErrorMessage(mutation.error)}
+            {translateLoginError(extractErrorMessage(mutation.error))}
           </div>
         )}
 
