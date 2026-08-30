@@ -1,48 +1,51 @@
+**English** | [Magyar](README.hu.md)
+
 # Mini Arcade — Frontend
 
-React + Vite + TypeScript frontend a Mini Arcade microservice projekthez.
+React + Vite + TypeScript frontend for the Mini Arcade microservice project.
 
 ## Stack
 
 - **Vite** + **React 18** + **TypeScript**
-- **Tailwind CSS** custom design tokenekkel
-- **React Router** routing
-- **TanStack Query** server state
-- **Zustand** auth state (localStorage persistence)
-- **axios** HTTP kliens (auto JWT injection)
-- **react-hook-form** + **zod** form validáció
+- **Tailwind CSS** with custom design tokens
+- **React Router** for routing
+- **TanStack Query** for server state
+- **Zustand** for auth state (localStorage persistence)
+- **axios** HTTP client (auto JWT injection)
+- **react-hook-form** + **zod** for form validation
 
-## Indítás
+## Getting started
 
 ```bash
 npm install
 npm run dev
 ```
 
-A frontend a `http://localhost:5173` címen érhető el.
+The frontend is then available at `http://localhost:5173`.
 
-A `/api/*` hívások a Vite dev server proxyján keresztül a gateway-re
-(`http://localhost:8080`) jutnak — így nem kell CORS-szal bajlódni dev-ben.
+`/api/*` calls go through the Vite dev server proxy to the gateway
+(`http://localhost:8080`) — no need to deal with CORS in dev.
 
-## Backend futtatása
+## Running the backend
 
-A frontend a teljes microservice stack-et igényli:
+The frontend needs the full microservice stack:
 
 ```bash
 cd ../infra
 docker compose up --build
 ```
 
-Ez elindítja: postgres, auth-service (8081), score-service (8082), gateway (8080).
+This starts: postgres, auth-service (8081), score-service (8082), gateway
+(8080).
 
-## Mappa-struktúra
+## Project structure
 
 ```
 src/
-├── api/          # axios kliens + API hívások (auth, scores)
-├── components/   # újrahasznosítható UI komponensek
-├── pages/        # route-onkénti oldalak
-├── store/        # Zustand store-ok (authStore)
+├── api/          # axios client + API calls (auth, scores)
+├── components/   # reusable UI components
+├── pages/        # per-route pages
+├── store/        # Zustand stores (authStore)
 ├── styles/       # global CSS / Tailwind base
 ├── App.tsx       # Routes + Layout
 └── main.tsx      # entry point
@@ -50,11 +53,11 @@ src/
 
 ## Routing
 
-| Route | Védett | Komponens |
+| Route | Protected | Component |
 |---|---|---|
 | `/login` | ❌ | LoginPage |
 | `/register` | ❌ | RegisterPage |
-| `/` | ✅ | HomePage (játékválasztó) |
+| `/` | ✅ | HomePage (game picker) |
 | `/play/:slug` | ✅ | PlayPage (snake / tictactoe) |
 | `/leaderboard` | ✅ | LeaderboardPage |
 | `/me` | ✅ | MyScoresPage |
@@ -65,5 +68,5 @@ src/
 npm run build
 ```
 
-A `dist/` mappába kerül a statikus build. Production-ben a `VITE_API_URL`
-env-változóval állítható be a backend URL-je.
+The static build is written to `dist/`. In production, the backend URL is
+configured via the `VITE_API_URL` env variable.
